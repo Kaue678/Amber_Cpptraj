@@ -1,0 +1,28 @@
+parm complex_solv.top
+
+# Carregar as trajetórias
+trajin 10ns.mdcrd
+trajin 20ns.mdcrd
+trajin 30ns.mdcrd
+trajin 40ns.mdcrd
+trajin 50ns.mdcrd
+trajin 60ns.mdcrd
+trajin 70ns.mdcrd
+trajin 80ns.mdcrd
+trajin 90ns.mdcrd
+trajin 100ns.mdcrd
+
+# Remover tudo exceto a proteína e ligante (resíduos 1-377 e 378)
+strip (!:1-377,378,:WAT,:NA,:CL)
+autoimage
+# Salvar a nova trajetória
+trajout complex_new.mdcrd onlyframes 1-100000
+
+run
+clear all
+
+# Criar nova topologia sem solventes e íons
+parm complex_solv.top
+parmstrip (!:1-377,378)
+parmwrite out complex_new.top
+

@@ -1,0 +1,23 @@
+parm complex_new.top  
+
+# Trajetórias  
+trajin complex_new.mdcrd
+
+# Centralização e imagem periódica  
+autoimage  
+center :1-378 mass origin    
+
+# RMSF (flutuação atômica)  
+atomicfluct out rmsf_complex.dat byres :1-378@C,N,O,CA  
+
+# Defina a estrutura de referência para RMSD (minimizada ou a desejada)  
+reference proteina-min.pdb  # Estrutura de referência (minimizada)  
+
+# RMSD (com a estrutura minimizada como referência)  
+rms reference proteina-min.pdb :1-378@C,N,O,CA out rmsd_complex.dat time 0.1 mass  
+
+# Raio de giro  
+radgyr out radius_of_gyration_complex.dat :1-378  
+
+# Execute os comandos  
+run
