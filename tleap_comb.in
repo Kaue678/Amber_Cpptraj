@@ -1,0 +1,37 @@
+######Neste protocolo deve-se usar as coordenadas espaciais do ligante e do receptor originais. 
+######É recomendável submeter o sistema no programa PROPKA para avaliação do estado de protonação dos resíduos.
+############################################################################
+                " PREPARAÇÃO DO LIGANTE (parmcheck, antechamber e tleap) "
+############################################################################
+
+
+antechamber -fi gout -fo ac -i ligand.log -o input.ac -c resp
+antechamber -fi ac -i input.ac -c wc -cf input.crg
+antechamber -fi pdb -fo mol2 -i ligand.pdb -o ligand.mol2 -c rc -cf input.crg -j 4 -at gaff 
+parmchk -i ligand.mol2 -f mol2 -o ligand.frcmod
+
+
+############################################################################
+                " PREPARAÇÃO DA PROTEÍNA (tleap) "
+############################################################################
+
+source oldff/leaprc.ff14SB
+source leaprc.water.tip3p
+source leaprc.gaff
+loadamberparams ligand.frcmod
+LIG=loadmol2 ligand.mol2
+REC=loadpdb receptor.pdb
+COM = combine {REC LIG}
+set default PBRadii mbondi2
+saveamberparm LIG ligand.top ligand.crd
+saveamberparm REC receptor.top receptor.crd
+saveamberparm COM complex.top complex.crd
+savepdb COM complex.pdb
+check LIG
+check COM
+charge COM
+addIons2 COM Na+ 0
+solvateOct COM TIP3PBOX 9.0 
+saveamberparm COM complex_solv.top complex_solv.crd
+savepdb COM complex_solv.pdb
+quit

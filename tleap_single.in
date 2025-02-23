@@ -1,0 +1,43 @@
+
+
+############################################################################
+                " PREPARAÇÃO DO LIGANTE (parmcheck, antechamber e tleap) "
+############################################################################
+
+Preparo do ligante (parmcheck e antechamber)
+
+g09 ligante_ps.com > ligante_ps.log
+
+antechamber -fi gout -fo prepi -i ligand.log -o input.prepi -c resp  
+antechamber -i input.prepi -fi prepi -o ligand.mol2 -fo mol2
+parmchk -i ligand.mol2 -f mol2 -o ligand.frcmod
+tleap -f tleap.in > tleap.out
+
+Obtenção do arquivo lib (tleap) 
+
+tleap
+source oldff/leaprc.ff14SB
+source leaprc.gaff
+loadamberparams ligand.frcmod
+LIG = loadmol2 ligand.mol2
+saveoff LIG ligand.lib
+quit
+
+############################################################################
+                " PREPARAÇÃO DA PROTEÍNA (tleap) "
+############################################################################
+
+source oldff/leaprc.ff14SB
+source leaprc.water.tip3p
+source leaprc.gaff 
+loadamberparams ligand.frcmod
+loadoff ligand.lib
+COM = loadpdb complex.pdb
+saveamberparm COM complexo.top complexo.crd
+addions COM Cl- 0
+addions COM Na+ 0
+solvateoct COM TIP3PBOX 12.0   
+saveamberparm COM complex_solv.top complex_solv.crd
+savepdb COM complex_solv.pdb
+quit
+

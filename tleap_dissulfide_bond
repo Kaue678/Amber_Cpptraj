@@ -1,0 +1,28 @@
+### Protocolo tleap para montagem do sistema
+
+source leaprc.protein.ff14SB 
+source leaprc.gaff2          
+source leaprc.water.tip3p    
+loadamberparams frcmod.ionsjc_tip3p  
+set default PBRadii mbondi2 ### para igb=5
+loadamberparams lig_resp.frcmod
+lig = loadmol2 lig_resp.mol2
+rec = loadpdb prot-apo.pdb 
+bond rec.69.SG rec.59.SG
+bond rec.57.SG rec.41.SG
+com = combine {rec cof lig}
+savepdb com complex.pdb
+saveamberparm com complex.prmtop complex.inpcrd
+check rec 
+check lig
+check com
+charge com
+addions com Cl- ou Na+ 0.0 
+charge com
+solvateoct com TIP3PBOX 12.0
+check rec 
+check lig
+check com
+savepdb com complex_solv.pdb
+saveamberparm com complex_solv.prmtop complex_solv.inpcrd
+quit
